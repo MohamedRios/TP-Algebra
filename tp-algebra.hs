@@ -22,13 +22,13 @@ sonCirculosIguales (x:xs) (y:ys)
 --Recibe un entero y verifica si es Primo o no
 esPrimo :: Integer -> Bool
 esPrimo 1 = False
-esPrimo n = esPrimoAux n (n - 1)
+esPrimo n = hayDivisorPropio n (n - 1)
 
---Auxiliar de esPrimo
-esPrimoAux :: Integer -> Integer -> Bool
-esPrimoAux _ 1 = True
-esPrimoAux n m
-    | mod n m /= 0 = esPrimoAux n (m - 1)
+-- Busca si existe un divisor propio. Es decir, divisor distinto de sí mismo y 1.
+hayDivisorPropio :: Integer -> Integer -> Bool
+hayDivisorPropio _ 1 = True
+hayDivisorPropio n m
+    | mod n m /= 0 = hayDivisorPropio n (m - 1)
     | otherwise = False
 
 --Suma los numeros adyecentes de la lista y verifica que sean primos. Se repite hasta que el contador llegue a 0. (Tamaño del Circulo)
@@ -48,39 +48,44 @@ circuloRepetido c (cl:cls)
     | not (sonCirculosIguales c cl) = circuloRepetido c cls
     | otherwise = True
 
+--Verifica si el primer elemento de una lista de círculos se encuentra repetido
 estaRepetidoPrimero :: [Circulo] -> Bool
 estaRepetidoPrimero (c:cs) = circuloRepetido c cs
 
-agregarelem :: Integer -> [Circulo] -> [Circulo]
-agregarelem n [] = []
-agregarelem n (xs:xss) = (n:xs):(agregarelem n xss)
+--Agrega un elemento n a cada lista de la lista de listas dada
+agregarElem :: Integer -> [[Integer]] -> [[Integer]]
+agregarElem n [] = []
+agregarElem n (xs:xss) = (n:xs):(agregarElem n xss)
 
-variaciones :: Integer -> Circulo -> [Circulo]
-variaciones n [] = [[n]]
-variaciones n (x:xs) = (n:(x:xs)):(agregarelem x (variaciones n xs))
+--Dadu un entero n y una lista de enteros, arma una lista agregando n a cada posición posible
+--Por ejemplo: formasDeAgregar 3 [1,2] -> [[3,1,2],[1,3,2],[1,2,3]]
+formasDeAgregar :: Integer -> [Integer] -> [[Integer]]
+formasDeAgregar n [] = [[n]]
+formasDeAgregar n (x:xs) = (n:(x:xs)):(agregarElem x (formasDeAgregar n xs))
 
-permaux :: Integer -> [Circulo] -> [Circulo]
-permaux n [] = []
-permaux n (xs:xss) = (variaciones n xs) ++ (permaux n xss)
+-- Aplico formasDeAgregar n a cada lista de la lista de listas dada
+permAux :: Integer -> [[Integer]] -> [[Integer]]
+permAux n [] = []
+permAux n (xs:xss) = (formasDeAgregar n xs) ++ (permAux n xss)
 
-permutaciones :: Integer -> [Circulo]
-permutaciones 1 =[[1]]
-permutaciones n = permaux n (permutaciones (n-1))
+permutaciones :: Integer -> [[Integer]]
+permutaciones 1 = [[1]]
+permutaciones n = permAux n (permutaciones (n-1))
 
 
 listaCirculosPrimos :: Integer -> [Circulo]
-listaCirculosPrimos n = listaux (permutaciones n)
+listaCirculosPrimos n = filtrarCirculosPrimos (permutaciones n)
 
-listaux :: [Circulo] -> [Circulo]
-listaux [] = []
-listaux (xs:xss)
- | estaRepetidoPrimero (xs:xss) = listaux xss
- | esCirculoPrimo xs = xs:(listaux xss)
- | otherwise = listaux xss
+filtrarCirculosPrimos :: [Circulo] -> [Circulo]
+filtrarCirculosPrimos [] = []
+filtrarCirculosPrimos (xs:xss)
+ | esCirculoPrimo xs && (not (estaRepetidoPrimero (xs:xss))) = xs:(filtrarCirculosPrimos xss)
+ | otherwise = filtrarCirculosPrimos xss
 
-contadorDeLista :: [Circulo] -> Integer
-contadorDeLista [] = 0
-contadorDeLista (c:cs) = 1 + (contadorDeLista cs)
+--Retorna la cantidad de círculos de la lista dada
+contarCirculos :: [Circulo] -> Integer
+contarCirculos [] = 0
+contarCirculos (c:cs) = 1 + (contarCirculos cs)
 
 contarCirculosPrimos :: Integer -> Integer
-contarCirculosPrimos n = contadorDeLista (listaCirculosPrimos n)
+contarCirculosPrimos n = contarCirculos (listaCirculosPrimos n)
