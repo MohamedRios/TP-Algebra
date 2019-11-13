@@ -1,9 +1,3 @@
--------------------------------------------------------------------------------
--------------------------------------------------------------------------------
------------------------ *** TP *** ----------------------------------------------------
--------------------------------------------------------------------------------
--------------------------------------------------------------------------------
-
 --Consideramos que al menos tiene 1 elemento (círculo de orden 1) y que dos círculos de orden n tienen los mismos elemento
 type Circulo = [Integer]
 
@@ -56,3 +50,37 @@ circuloRepetido c (cl:cls)
 
 estaRepetidoPrimero :: [Circulo] -> Bool
 estaRepetidoPrimero (c:cs) = circuloRepetido c cs
+
+agregarelem :: Integer -> [Circulo] -> [Circulo]
+agregarelem n [] = []
+agregarelem n (xs:xss) = (n:xs):(agregarelem n xss)
+
+variaciones :: Integer -> Circulo -> [Circulo]
+variaciones n [] = [[n]]
+variaciones n (x:xs) = (n:(x:xs)):(agregarelem x (variaciones n xs))
+
+permaux :: Integer -> [Circulo] -> [Circulo]
+permaux n [] = []
+permaux n (xs:xss) = (variaciones n xs) ++ (permaux n xss)
+
+permutaciones :: Integer -> [Circulo]
+permutaciones 1 =[[1]]
+permutaciones n = permaux n (permutaciones (n-1))
+
+
+listaCirculosPrimos :: Integer -> [Circulo]
+listaCirculosPrimos n = listaux (permutaciones n)
+
+listaux :: [Circulo] -> [Circulo]
+listaux [] = []
+listaux (xs:xss)
+ | estaRepetidoPrimero (xs:xss) = listaux xss
+ | esCirculoPrimo xs = xs:(listaux xss)
+ | otherwise = listaux xss
+
+contadorDeLista :: [Circulo] -> Integer
+contadorDeLista [] = 0
+contadorDeLista (c:cs) = 1 + (contadorDeLista cs)
+
+contarCirculosPrimos :: Integer -> Integer
+contarCirculosPrimos n = contadorDeLista (listaCirculosPrimos n)
