@@ -87,5 +87,6 @@ contarCirculos :: [Circulo] -> Integer
 contarCirculos [] = 0
 contarCirculos (c:cs) = 1 + (contarCirculos cs)
 
+--Cuenta la cantidad de círculos primos de orden n. Se considera n >= 2
 contarCirculosPrimos :: Integer -> Integer
 contarCirculosPrimos n = contarCirculos (listaCirculosPrimos n)
