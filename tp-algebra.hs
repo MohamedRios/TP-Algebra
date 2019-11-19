@@ -22,13 +22,13 @@ sonCirculosIguales (x:xs) (y:ys)
 --Recibe un entero y verifica si es Primo o no
 esPrimo :: Integer -> Bool
 esPrimo 1 = False
-esPrimo n = hayDivisorPropio n (n - 1)
+esPrimo n = nohayDivisorPropio n (n - 1)
 
 -- Busca si existe un divisor propio. Es decir, divisor distinto de sí mismo y 1.
-hayDivisorPropio :: Integer -> Integer -> Bool
-hayDivisorPropio _ 1 = True
-hayDivisorPropio n m
-    | mod n m /= 0 = hayDivisorPropio n (m - 1)
+nohayDivisorPropio :: Integer -> Integer -> Bool
+nohayDivisorPropio _ 1 = True
+nohayDivisorPropio n m
+    | mod n m /= 0 = nohayDivisorPropio n (m - 1)
     | otherwise = False
 
 --Suma los numeros adyecentes de la lista y verifica que sean primos. Se repite hasta que el contador llegue a 0. (Tamaño del Circulo)
@@ -90,3 +90,4 @@ contarCirculos (c:cs) = 1 + (contarCirculos cs)
 --Cuenta la cantidad de círculos primos de orden n. Se considera n >= 2
 contarCirculosPrimos :: Integer -> Integer
 contarCirculosPrimos n = contarCirculos (listaCirculosPrimos n)
+
